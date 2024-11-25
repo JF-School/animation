@@ -13,6 +13,20 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin BounceFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:BounceFont.spritefont
+
+#begin indBounceFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:indBounceFont.spritefont
+
 #begin shinystar.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -24,6 +38,24 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:shinystar.png
+
+#begin startbutton.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:startbutton.png
+
+#begin tribble_coo.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:tribble_coo.wav
 
 #begin tribbleBrown.png
 /importer:TextureImporter
@@ -61,6 +93,18 @@
 /processorParam:TextureFormat=Color
 /build:tribbleGrey.png
 
+#begin tribbleintro.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:tribbleintro.jpg
+
 #begin tribbleOrange.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -72,4 +116,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:tribbleOrange.png
+
+#begin tribblePink.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:tribblePink.png
 
