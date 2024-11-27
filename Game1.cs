@@ -1,29 +1,45 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace animation
 {
     public class Game1 : Game
     {
-        Texture2D tribbleGreyTexture, tribbleCreamTexture, tribbleOrangeTexture, tribbleBrownTexture, tribblePinkTexture, backTexture, tribbleIntroTexture, startTexture;
-        Rectangle tribbleGreyRect, tribbleCreamRect, tribbleOrangeRect, tribbleBrownRect, tribblePinkRect, window, backRect, startRect;
-        Vector2 tribbleGreySpeed, tribbleCreamSpeed, tribbleOrangeSpeed, tribbleBrownSpeed, tribblePinkSpeed;
+        Texture2D tribbleGreyTexture, tribbleCreamTexture, tribbleOrangeTexture, 
+            tribbleBrownTexture, tribblePinkTexture, backTexture, tribbleIntroTexture, 
+            startTexture, crashedTexture;
+        Rectangle tribbleGreyRect, tribbleCreamRect, tribbleOrangeRect, 
+            tribbleBrownRect, tribblePinkRect, window, backRect, startRect;
+        Vector2 tribbleGreySpeed, tribbleCreamSpeed, tribbleOrangeSpeed, tribbleBrownSpeed, 
+            tribblePinkSpeed;
+
         SpriteFont bounceFont, indBounceFont;
-        int bounces = 0, greyBounces = 0, creamBounces = 0, orangeBounces = 0, brownBounces = 0, pinkBounces = 0;
+
+        int bounces = 0, greyBounces = 0, creamBounces = 0, orangeBounces = 0, brownBounces = 0, 
+            pinkBounces = 0;
+
+        SoundEffect tribbleCoo, staticSound;
+        SoundEffectInstance staticSoundInstance;
+
+        float seconds;
+
+        Random generator = new Random();
         
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        bool pinkTribbleAlive;
 
         MouseState mouseState;
 
         enum Screen
         {
             Intro,
-            TribbleYard
+            TribbleYard,
+            Outro
         }
         Screen screen;
 
@@ -40,8 +56,6 @@ namespace animation
 
             base.Initialize();
 
-            pinkTribbleAlive = true;
-
             window = new Rectangle(0, 0, 800, 600);
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
@@ -55,13 +69,14 @@ namespace animation
             tribblePinkRect = new Rectangle(700, 500, 100, 100);
             startRect = new Rectangle(200, 300, 400, 300);
 
-            tribbleGreySpeed = new Vector2(2, 2);
+            tribbleGreySpeed = new Vector2(3, 3);
             tribbleCreamSpeed = new Vector2(0, 3);
             tribbleOrangeSpeed = new Vector2(4, 0);
             tribbleBrownSpeed = new Vector2(4, 7);
             tribblePinkSpeed = new Vector2(-1, -1);
 
             screen = Screen.Intro;
+            seconds = 5;
         }
 
         protected override void LoadContent()
@@ -75,11 +90,16 @@ namespace animation
             tribbleOrangeTexture = Content.Load<Texture2D>("tribbleorange");
             tribbleIntroTexture = Content.Load<Texture2D>("tribbleintro");
             tribblePinkTexture = Content.Load<Texture2D>("tribblepink");
+            crashedTexture = Content.Load<Texture2D>("crashedtv");
             backTexture = Content.Load<Texture2D>("shinystar");
             startTexture = Content.Load<Texture2D>("startbutton");
 
             bounceFont = Content.Load<SpriteFont>("BounceFont");
             indBounceFont = Content.Load<SpriteFont>("indBounceFont");
+
+            tribbleCoo = Content.Load<SoundEffect>("tribble_coo");
+            staticSound = Content.Load<SoundEffect>("static");
+            staticSoundInstance = staticSound.CreateInstance();
             
         }
 
@@ -94,20 +114,32 @@ namespace animation
 
             if (screen == Screen.Intro)
             {
+                this.Window.Title = "hi! click on start to go to the tribble yard.";
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
                     if (startRect.Contains(mouseState.Position))
+                    {
                         screen = Screen.TribbleYard;
+                        this.Window.Title = "Welcome to the tribble yard!";
+                    }
                 }
             }
             else if (screen == Screen.TribbleYard)
             {
+                seconds -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                List<string> titles = new List<string> { "Bounce! Bounce! Bounce!", "HELP ME!", "The tribble yard is full of excitement today!", "I love tribbles bouncing!", "Don't get to 1000 bounces! I'm warning you...", "Who is the pink tribble?", "How many titles can I make?", "Peek-a-boo", "Have you been to the Casino of Aldworth?" };
+
+                if (seconds <= 0)
+                {
+                    this.Window.Title = titles[generator.Next(titles.Count)];
+                    seconds = 5f;
+                }
+                
                 tribbleGreyRect.X += (int)tribbleGreySpeed.X;
                 tribbleCreamRect.X += (int)tribbleCreamSpeed.X;
                 tribbleOrangeRect.X += (int)tribbleOrangeSpeed.X;
                 tribbleBrownRect.X += (int)tribbleBrownSpeed.X;
-                if (pinkTribbleAlive)
-                    tribblePinkRect.X += (int)tribblePinkSpeed.X;
+                tribblePinkRect.X += (int)tribblePinkSpeed.X;
 
                 // tribble Grey intersections (X)
                 if (tribbleGreyRect.Intersects(tribbleCreamRect))
@@ -217,21 +249,6 @@ namespace animation
                     brownBounces += 1;
                     pinkBounces += 1;
                 }
-
-                // tribble grey
-                if (tribbleGreyRect.Right > window.Width || tribbleGreyRect.Left < 0)
-                {
-                    tribbleGreySpeed.X *= -1;
-                    bounces += 1;
-                    greyBounces += 1;
-                }
-                if (tribbleGreyRect.Bottom > window.Height || tribbleGreyRect.Top < 0)
-                {
-                    tribbleGreySpeed.Y *= -1;
-                    bounces += 1;
-                    greyBounces += 1;
-                }
-
 
                 tribbleGreyRect.Y += (int)tribbleGreySpeed.Y;
                 tribbleCreamRect.Y += (int)tribbleCreamSpeed.Y;
@@ -347,8 +364,21 @@ namespace animation
                     pinkBounces += 1;
                 }
 
-
-
+                // tribble grey
+                if (tribbleGreyRect.Right > window.Width || tribbleGreyRect.Left < 0)
+                {
+                    tribbleGreySpeed.X *= -1;
+                    bounces += 1;
+                    greyBounces += 1;
+                    tribbleCoo.Play();
+                }
+                if (tribbleGreyRect.Bottom > window.Height || tribbleGreyRect.Top < 0)
+                {
+                    tribbleGreySpeed.Y *= -1;
+                    bounces += 1;
+                    greyBounces += 1;
+                    tribbleCoo.Play();
+                }
 
                 // tribble cream
                 if (tribbleCreamRect.Right > window.Width || tribbleCreamRect.Left < 0)
@@ -356,12 +386,14 @@ namespace animation
                     tribbleCreamSpeed.X *= -1;
                     bounces += 1;
                     creamBounces += 1;
+                    tribbleCoo.Play();
                 }
                 if (tribbleCreamRect.Bottom > window.Height || tribbleCreamRect.Top < 0)
                 {
                     tribbleCreamSpeed.Y *= -1;
                     bounces += 1;
                     creamBounces += 1;
+                    tribbleCoo.Play();
                 }
 
                 // tribble orange
@@ -370,12 +402,14 @@ namespace animation
                     tribbleOrangeSpeed.X *= -1;
                     bounces += 1;
                     orangeBounces += 1;
+                    tribbleCoo.Play();
                 }
                 if (tribbleOrangeRect.Bottom > window.Height || tribbleOrangeRect.Top < 0)
                 {
                     tribbleOrangeSpeed.Y *= -1;
                     bounces += 1;
                     orangeBounces += 1;
+                    tribbleCoo.Play();
                 }
 
                 // tribble brown
@@ -384,12 +418,14 @@ namespace animation
                     tribbleBrownSpeed.X *= -1;
                     bounces += 1;
                     brownBounces += 1;
+                    tribbleCoo.Play();
                 }
                 if (tribbleBrownRect.Bottom > window.Height || tribbleBrownRect.Top < 0)
                 {
                     tribbleBrownSpeed.Y *= -1;
                     bounces += 1;
                     brownBounces += 1;
+                    tribbleCoo.Play();
                 }
 
                 // tribble pink
@@ -398,12 +434,28 @@ namespace animation
                     tribblePinkSpeed.X *= -1;
                     bounces += 1;
                     pinkBounces += 1;
+                    tribbleCoo.Play();
                 }
                 if (tribblePinkRect.Bottom > window.Height || tribblePinkRect.Top < 0)
                 {
                     tribblePinkSpeed.Y *= -1;
                     bounces += 1;
                     pinkBounces += 1;
+                    tribbleCoo.Play();
+                }
+                if (bounces >= 100)
+                {
+                    screen = Screen.Outro;
+                    staticSoundInstance.Play();
+                }
+            }
+            else if (screen == Screen.Outro)
+            {
+                this.Window.Title = "WHAT DID YOU DO TO MY APPLICATION";
+                IsMouseVisible = false;
+                if (staticSoundInstance.State == SoundState.Stopped)
+                {
+                    Exit();
                 }
             }
         }
@@ -432,6 +484,15 @@ namespace animation
                 _spriteBatch.Draw(tribblePinkTexture, tribblePinkRect, Color.White);
                 _spriteBatch.DrawString(bounceFont, ("Bounces: " + bounces), new Vector2(550, 500), Color.White);
                 _spriteBatch.DrawString(indBounceFont, ("Grey Bounces: " + greyBounces + " | Cream Bounces: " + creamBounces + " | Orange Bounces: " + orangeBounces + " | Brown Bounces: " + brownBounces + " | Pink Bounces: " + pinkBounces), new Vector2(0, 550), Color.White);
+            }
+            else if (screen == Screen.Outro)
+            {
+                _spriteBatch.Draw(crashedTexture, backRect, Color.White);
+                _spriteBatch.Draw(tribbleGreyTexture, tribbleGreyRect, Color.White);
+                _spriteBatch.Draw(tribbleCreamTexture, tribbleCreamRect, Color.White);
+                _spriteBatch.Draw(tribbleOrangeTexture, tribbleOrangeRect, Color.White);
+                _spriteBatch.Draw(tribbleBrownTexture, tribbleBrownRect, Color.White);
+                _spriteBatch.Draw(tribblePinkTexture, tribblePinkRect, Color.White);
             }
 
             _spriteBatch.End();
