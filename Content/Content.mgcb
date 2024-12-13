@@ -63,6 +63,12 @@
 /processorParam:TextureFormat=Color
 /build:startbutton.png
 
+#begin startrek.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:startrek.wav
+
 #begin static.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

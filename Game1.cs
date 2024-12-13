@@ -23,8 +23,8 @@ namespace animation
         int bounces = 0, greyBounces = 0, creamBounces = 0, orangeBounces = 0, brownBounces = 0, 
             pinkBounces = 0;
 
-        SoundEffect tribbleCoo, staticSound;
-        SoundEffectInstance staticSoundInstance;
+        SoundEffect tribbleCoo, staticSound, introSound;
+        SoundEffectInstance staticSoundInstance, introSoundInstance;
 
         float seconds;
 
@@ -99,7 +99,9 @@ namespace animation
 
             tribbleCoo = Content.Load<SoundEffect>("tribble_coo");
             staticSound = Content.Load<SoundEffect>("static");
+            introSound = Content.Load<SoundEffect>("startrek");
             staticSoundInstance = staticSound.CreateInstance();
+            introSoundInstance = introSound.CreateInstance();
             
         }
 
@@ -114,6 +116,7 @@ namespace animation
 
             if (screen == Screen.Intro)
             {
+                introSoundInstance.Play();
                 this.Window.Title = "hi! click on start to go to the tribble yard.";
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
@@ -126,6 +129,7 @@ namespace animation
             }
             else if (screen == Screen.TribbleYard)
             {
+                introSoundInstance.Stop();
                 seconds -= (float)gameTime.ElapsedGameTime.TotalSeconds;
                 List<string> titles = new List<string> { "Bounce! Bounce! Bounce!", "HELP ME!", "The tribble yard is full of excitement today!", "I love tribbles bouncing!", "Don't get to 1000 bounces! I'm warning you...", "Who is the pink tribble?", "How many titles can I make?", "Peek-a-boo", "Have you been to the Casino of Aldworth?" };
 
@@ -443,7 +447,7 @@ namespace animation
                     pinkBounces += 1;
                     tribbleCoo.Play();
                 }
-                if (bounces >= 100)
+                if (bounces >= 1000)
                 {
                     screen = Screen.Outro;
                     staticSoundInstance.Play();
